@@ -1,0 +1,80 @@
+###
+POST http://localhost:3001/api/v1/client HTTP/1.1
+content-type: application/json
+
+{
+    "name": "Joseph",
+    "dateOfBirth": "2000-07-23T16:23:28.954Z",
+    "address": "Zimmerman, Kasarani Constituency",
+    "email": "josephkithome.jmk@gmail.com"
+}
+
+###
+GET http://localhost:3001/api/v1/clients HTTP/1.1
+content-type: application/json
+
+{
+}
+
+###
+POST http://localhost:3001/api/v1/policy HTTP/1.1
+content-type: application/json
+
+{
+    "clientId": "62181c89-7099-49b0-b70d-23b0ac1e8b00",
+    "policyType": "home",
+    "startDate": "2024-07-23T16:23:28.954Z",
+    "endDate": "2027-07-23T16:23:28.954Z",
+    "premiumAmount": 100000,
+    "coverageAmount": 20000,
+    "policyType": "life",
+    "status": "active"
+}
+###
+POST http://localhost:3001/api/v1/claims HTTP/1.1
+content-type: application/json
+
+{
+    "clientId": "62181c89-7099-49b0-b70d-23b0ac1e8b00",
+    "policyId": "9523d2af-a811-4581-ad14-16404c59075d",
+    "claimDate": "2024-07-23T16:23:28.954Z",
+    "startDate": "2027-07-23T16:23:28.954Z",
+    "claimAmount": 1000,
+    "coverageAmount": 20000,
+    "description": "This",
+    "status": "submitted"
+}
+
+###
+PUT http://localhost:3001/api/v1/claims/29115b9a-9d1c-41ec-915a-b3bd0c206368 HTTP/1.1
+content-type: application/json
+
+{
+    "clientId": "7f3cd0fb-e6ef-4955-946f-ef971891452f",
+    "policyId": "9523d2af-a811-4581-ad14-16404c59075d",
+    "status": "approved"
+}
+###
+GET http://localhost:3001/api/v1/claims/669fda945dcde416e2a5fb52 HTTP/1.1
+content-type: application/json
+
+{
+    "clientId": "7f3cd0fb-e6ef-4955-946f-ef971891452f"
+   
+}
+
+###
+GET http://localhost:3001/api/v1/claims/total-by-policy-type/669fef5b6e41eee0f5e8ea8b HTTP/1.1
+content-type: application/json
+
+{
+   
+}
+
+###
+GET http://localhost:3001/api/v1/claims/total-premium-by-client/669fda945dcde416e2a5fb52 HTTP/1.1
+content-type: application/json
+
+{
+   
+}
