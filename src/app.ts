@@ -1,5 +1,7 @@
 import express, { Application } from 'express';
 import bodyParser from 'body-parser';
+import swaggerUi from 'swagger-ui-express';
+import { swaggerDocument } from './documentation/swagger';
 
 import { MongoConnector } from './database/mongoConnector';
 import { CustomLogger } from './utils/logger';
@@ -24,6 +26,7 @@ app.use(bodyParser.json());
 
 app.post('/api/v1/clients', clientController.createClient); 
 app.get('/api/v1/clients', clientController.listClients);
+app.get('/api/v1/clients/:clientId', clientController.clientById);
 
 app.post('/api/v1/policy', policyController.createPolicy);
 
@@ -35,7 +38,7 @@ app.get('/api/v1/claims/total-premium-by-client/:clientId', claimController.tota
 
 
 // Swagger setup
-// app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Server start
 const PORT = process.env.PORT || 3001;

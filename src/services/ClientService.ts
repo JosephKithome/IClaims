@@ -1,7 +1,8 @@
 import { UtilityService } from '../utils/utils';
-import { CustomLogger } from '../utils/logger';
 import { Claim, Client } from '../models/schema';
 import { CustomValidator } from '../utils/validator';
+import { v4 as uuidv4 } from 'uuid';
+
 
 
 class ClientService {
@@ -37,6 +38,7 @@ class ClientService {
             }
             
             const newClient = new Client({
+                clientId: uuidv4(),
                 name: name,
                 email: email,
                 dateOfBirth: dateOfBirth,
@@ -57,6 +59,22 @@ class ClientService {
                 return { success: false, errorMessage: "No clients found" };
             }
             return { success: true, clients: clients };
+        } catch (error: any) {
+            return { success: false, errorMessage:error.message };
+        }
+    }
+
+    async clientById(req: any): Promise<{ success: boolean; client?: any; errorMessage?: any }> {
+
+        try {
+
+            const {clientId} = req.params;
+
+            const client = await Client.find({clientId});
+            if(!client){
+                return { success: false, errorMessage: `No clients found with ${clientId}` };
+            }
+            return { success: true, client: client };
         } catch (error: any) {
             return { success: false, errorMessage:error.message };
         }

@@ -40,4 +40,23 @@ export class ClientController {
         }
 
     }
+    async clientById(req: Request, resp: Response) {
+        try {
+           
+
+            const clientService = new ClientService();
+
+
+            const result = await clientService.clientById(req);
+
+            if (result.success) {
+                resp.status(201).json({ message: `Success`, policy: result.client });
+            } else {
+                resp.status(400).json({ error: result.errorMessage });
+            }
+        } catch (error) {
+            resp.status(500).json({ error:error });
+        }
+
+    }
 }
