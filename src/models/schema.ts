@@ -1,98 +1,186 @@
 import mongoose, { Schema, Document } from 'mongoose';
-import {PolicyType, PolicyStatus,ClaimStatus} from './Status';
-
-/*****************************************Start Client schema***************************************************************************** */
-
-export interface ClientDocument extends Document {
-    clientId: string;
+/*****************************************Start Product schema***************************************************************************** */
+export interface ProductDocument extends Document {
+    productId: string;
     name: string;
-    email: string;
-    dateOfBirth: string; 
-    address: string;
-}
-
-const clientSchema: Schema = new Schema({
-    clientId: { type: String, required: true },
-    name: { type: String, required: true},
-    email: { type: String, required: true },
-    dateOfBirth: { type: String, required: false },
-    address: { type: String, required: true },
-
-});
-
-export const Client = mongoose.model<ClientDocument>('Client', clientSchema);
-
-/*****************************************End Client schema***************************************************************************** */
-/*****************************************Define Policy schema***************************************************************************** */
-
-export interface PolicyDocument extends Document {
-    policyId: string;
-    clientId: string;
-    policyNumber: string;
-    policyType: string;
-    startDate: string; 
-    endDate: string;
-    premiumAmount: string;
-    coverageAmount: string;
-    status: string;
-}
-
-const policySchema: Schema = new Schema({
-    policyId: { type: String, required: true },
-    clientId: { type: Schema.Types.ObjectId, ref: 'Client', required: false},
-    policyNumber: { type: String, required: true },
-    policyType:  {
-        type: String,
-        enum: PolicyType,
-        required: true
-      },
-    startDate: { type: Date, required: true },
-    endDate: { type: Date, required: true },
-    premiumAmount: { type: String, required: true },
-    coverageAmount: { type: String, required: true },
-
-    status: {
-        type: String,
-        enum: PolicyStatus,
-        required: true
-      }
-
-
-});
-
-export const Policy = mongoose.model<PolicyDocument>('Policy', policySchema);
-
-/*****************************************End Policy schema***************************************************************************** */
-/*****************************************Define Claim schema***************************************************************************** */
-
-export interface ClaimDocument extends Document {
-    claimId: string;
-    policyId: string;
-    clientId: string;
-    claimDate: Date;
-    startDate: string; 
-    claimAmount: number;
     description: string;
+    price: number;
+    stock: number;
+    category: string;
+    imageUrl: string;
     status: string;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
-const claimSchema: Schema = new Schema({
-    claimId: { type: String, required: true },
-    policyId: { type: Schema.Types.ObjectId, ref: 'Policy', required: true},
-    clientId: { type: Schema.Types.ObjectId, ref: 'Client', required: true},
-    claimDate: { type: Date, required: true },
-    startDate: { type: String, required: true },
-    claimAmount: { type: Number, required: true },
-    description: { type: String, required: true },
-    status: {
-        type: String,
-        enum: ClaimStatus,
-        required: true
-      }
-
-
+const productSchema: Schema = new Schema({
+    productId: { type : 'string', required: true},
+    name: { type: String, required: true },
+    description: { type: String, required: false },
+    price: { type: Number, required: true },
+    stock: { type: Number, required: true },
+    category: { type: String, required: true },
+    imageUrl: { type: String, required: false },
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now },
 });
 
-export const Claim = mongoose.model<ClaimDocument>('Claim', claimSchema);
+export const Product = mongoose.model<ProductDocument>('Product', productSchema);
 
-/*****************************************End Claim schema***************************************************************************** */
+/*****************************************End Product schema***************************************************************************** */
+/*****************************************Start Order schema***************************************************************************** */
+
+export interface OrderDocument extends Document {
+    orderId: string;
+    user: mongoose.Schema.Types.ObjectId;
+    products: { product: mongoose.Schema.Types.ObjectId, quantity: number }[];
+    totalAmount: number;
+    status: string;
+    shippingAddress: string;
+    paymentStatus: string;
+    createdAt: Date;
+    updatedAt: Date;
+    
+}
+
+const orderSchema: Schema = new Schema({
+    orderId: { type: String, required: true },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    products: [{
+        product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
+        quantity: { type: Number, required: true },
+    }],
+    totalAmount: { type: Number, required: true },
+    status: { type: String, required: true, default: 'pending' },
+    shippingAddress: { type: String, required: true },
+    paymentStatus: { type: String, required: true, default: 'unpaid' },
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now },
+});
+
+export const Order = mongoose.model<OrderDocument>('Order', orderSchema);
+
+/*****************************************End Order schema***************************************************************************** */
+/*****************************************Start Review schema***************************************************************************** */
+export interface ReviewDocument extends Document {
+    user: mongoose.Schema.Types.ObjectId;
+    productId: mongoose.Schema.Types.ObjectId;
+    rating: number;
+    comment: string;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+const reviewSchema: Schema = new Schema({
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
+    rating: { type: Number, required: true },
+    comment: { type: String, required: false },
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now },
+});
+
+export const Review = mongoose.model<ReviewDocument>('Review', reviewSchema);
+
+/*****************************************End Review schema***************************************************************************** */
+
+/*****************************************Start Cart schema***************************************************************************** */
+export interface CartDocument extends Document {
+    userId: mongoose.Schema.Types.ObjectId;
+    products: { product: mongoose.Schema.Types.ObjectId, quantity: number }[];
+    totalAmount: number;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+const cartSchema: Schema = new Schema({
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    products: [{
+        product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
+        quantity: { type: Number, required: true },
+    }],
+    totalAmount: { type: Number, required: true },
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now },
+});
+
+export const Cart = mongoose.model<CartDocument>('Cart', cartSchema);
+
+/*****************************************End Cart schema***************************************************************************** */
+/*****************************************Start Payment schema***************************************************************************** */
+export interface PaymentDocument extends Document {
+    userId: mongoose.Schema.Types.ObjectId;
+    order: mongoose.Schema.Types.ObjectId;
+    amount: number;
+    paymentMethod: string;
+    paymentStatus: string;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+const paymentSchema: Schema = new Schema({
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    order: { type: mongoose.Schema.Types.ObjectId, ref: 'Order', required: true },
+    amount: { type: Number, required: true },
+    paymentMethod: { type: String, required: true },
+    paymentStatus: { type: String, required: true, default: 'pending' },
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now },
+});
+
+export const Payment = mongoose.model<PaymentDocument>('Payment', paymentSchema);
+
+/*****************************************End Payment schema***************************************************************************** */
+/*****************************************Start Wishlist schema***************************************************************************** */
+
+export interface WishlistDocument extends Document {
+    user: mongoose.Schema.Types.ObjectId;
+    products: mongoose.Schema.Types.ObjectId[];
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+const wishlistSchema: Schema = new Schema({
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    products: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true }],
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now },
+});
+
+export const Wishlist = mongoose.model<WishlistDocument>('Wishlist', wishlistSchema);
+
+/*****************************************End Wishlist schema***************************************************************************** */
+/*****************************************Start Address schema***************************************************************************** */
+
+export interface AddressDocument extends Document {
+    user: mongoose.Schema.Types.ObjectId;
+    addressLine1: string;
+    addressLine2: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    country: string;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+const addressSchema: Schema = new Schema({
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    addressLine1: { type: String, required: true },
+    addressLine2: { type: String, required: false },
+    city: { type: String, required: true },
+    state: { type: String, required: true },
+    zipCode: { type: String, required: true },
+    country: { type: String, required: true },
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now },
+});
+
+export const Address = mongoose.model<AddressDocument>('Address', addressSchema);
+
+/*****************************************End Address schema***************************************************************************** */
+
+
+
+
+
